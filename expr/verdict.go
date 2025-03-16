@@ -9,7 +9,7 @@ type verdictP struct {
 	chain string
 }
 
-func VerdictExpr() *verdictP {
+func Verdict() *verdictP {
 	return &verdictP{
 		kind: nftExpr.VerdictAccept,
 	}
@@ -21,19 +21,19 @@ func (v *verdictP) ofKind(kind nftExpr.VerdictKind, chain string) *verdictP {
 	return v
 }
 
-func (v *verdictP) OfKindAccept() *verdictP {
+func (v *verdictP) Accept() *verdictP {
 	return v.ofKind(nftExpr.VerdictAccept, "")
 }
 
-func (v *verdictP) OfKindDrop() *verdictP {
+func (v *verdictP) Drop() *verdictP {
 	return v.ofKind(nftExpr.VerdictDrop, "")
 }
 
-func (v *verdictP) OfKindReturn() *verdictP {
+func (v *verdictP) Return() *verdictP {
 	return v.ofKind(nftExpr.VerdictReturn, "")
 }
 
-func (v *verdictP) OfKindJump(chain string) *verdictP {
+func (v *verdictP) Jump(chain string) *verdictP {
 	return v.ofKind(nftExpr.VerdictJump, chain)
 }
 

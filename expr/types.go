@@ -1,6 +1,9 @@
 package expr
 
-import nftExpr "github.com/google/nftables/expr"
+import (
+	nftExpr "github.com/google/nftables/expr"
+	"golang.org/x/sys/unix"
+)
 
 type Offset uint32
 
@@ -27,6 +30,21 @@ const (
 	CtStateRELATED     CtState = 4
 	CtStateNEW         CtState = 8
 	CtStateUNTRACKED   CtState = 64
+)
+
+const (
+	L3ProtoIPV4   uint8 = unix.NFPROTO_IPV4
+	L3ProtoIPV6   uint8 = unix.NFPROTO_IPV6
+	L3ProtoARP    uint8 = unix.NFPROTO_ARP
+	L3ProtoBRIDGE uint8 = unix.NFPROTO_BRIDGE
+)
+
+const (
+	L4ProtoICMP   uint8 = unix.IPPROTO_ICMP
+	L4ProtoTCP    uint8 = unix.IPPROTO_TCP
+	L4ProtoUDP    uint8 = unix.IPPROTO_UDP
+	L4ProtoICMPV6 uint8 = unix.IPPROTO_ICMPV6
+	L4ProtoSCTP   uint8 = unix.IPPROTO_SCTP
 )
 
 type VerdictKind int64

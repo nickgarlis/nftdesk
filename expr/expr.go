@@ -1,6 +1,11 @@
 package expr
 
-import nftExpr "github.com/google/nftables/expr"
+import (
+	"net"
+
+	nftExpr "github.com/google/nftables/expr"
+	"github.com/nickgarlis/nftdesk/internal"
+)
 
 type LookupExpression struct {
 	left   Payload
@@ -46,5 +51,41 @@ func newCompExpression(left Payload, op nftExpr.CmpOp, right []byte) *CmpExpress
 		left:  left,
 		op:    op,
 		right: right,
+	}
+}
+
+type NetworkExpression struct {
+	left Payload
+	data []byte
+	mask []byte
+	op   nftExpr.CmpOp
+}
+
+func (n *NetworkExpression) ToNftExprs() []nftExpr.Any {
+	left := n.left.ToNftExprs()
+	return append(left,
+		&nftExpr.Bitwise{
+			SourceRegister: 1,
+			DestRegister:   1,
+			Len:            uint32(len(n.mask)),
+			Mask:           n.mask,
+			Xor:            make([]byte, len(n.mask)),
+		},
+		&nftExpr.Cmp{
+			Op:       n.op,
+			Register: 1,
+			Data:     n.data,
+		},
+	)
+}
+
+func newNetworkExpression(left Payload, op nftExpr.CmpOp, network *net.IPNet) *NetworkExpression {
+	data := internal.NetIPToBytes(network.IP)
+	mask := internal.NetIPToBytes(net.IP(network.Mask))
+	return &NetworkExpression{
+		left: left,
+		data: data,
+		mask: mask,
+		op:   op,
 	}
 }

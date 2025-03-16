@@ -4,36 +4,36 @@ import (
 	nftExpr "github.com/google/nftables/expr"
 )
 
-type IfaceP struct {
+type IfaceMatcher struct {
 	key nftExpr.MetaKey
 }
 
-func IfaceMeta() *IfaceP {
-	return &IfaceP{
+func Iface() *IfaceMatcher {
+	return &IfaceMatcher{
 		key: nftExpr.MetaKeyIIFNAME,
 	}
 }
 
-func (i *IfaceP) OfKindInput() *IfaceP {
+func (i *IfaceMatcher) Input() *IfaceMatcher {
 	i.key = nftExpr.MetaKeyIIFNAME
 	return i
 }
 
-func (i *IfaceP) OfKindOutput() *IfaceP {
+func (i *IfaceMatcher) Output() *IfaceMatcher {
 	i.key = nftExpr.MetaKeyOIFNAME
 	return i
 }
 
-func (i *IfaceP) ToNftExprs() []nftExpr.Any {
+func (i *IfaceMatcher) ToNftExprs() []nftExpr.Any {
 	return []nftExpr.Any{
 		&nftExpr.Meta{Key: i.key, Register: 1},
 	}
 }
 
-func (i *IfaceP) Eq(iface string) *CmpExpression {
+func (i *IfaceMatcher) Eq(iface string) *CmpExpression {
 	return newCompExpression(i, nftExpr.CmpOpEq, []byte(iface+"\x00"))
 }
 
-func (i *IfaceP) Neq(iface string) *CmpExpression {
+func (i *IfaceMatcher) Neq(iface string) *CmpExpression {
 	return newCompExpression(i, nftExpr.CmpOpNeq, []byte(iface+"\x00"))
 }

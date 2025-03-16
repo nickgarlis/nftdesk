@@ -15,7 +15,7 @@ var err error
 
 func TestMain(m *testing.M) {
 	// Setup
-	d, err = NewNftDesk()
+	d, err = New()
 	if err != nil {
 		panic(err)
 	}
@@ -36,17 +36,17 @@ func TestBasic(t *testing.T) {
 	chain := table.AddChain("test-chain")
 
 	_, err := chain.AddRule(
-		expr.CtStateExpr().In(expr.CtStateESTABLISHED, expr.CtStateRELATED),
-		expr.VerdictExpr().OfKindAccept(),
+		expr.ConnTrack().State().In(expr.CtStateESTABLISHED, expr.CtStateRELATED),
+		expr.Verdict().Accept(),
 	)
 	if err != nil {
 		t.Error(err)
 	}
 
 	_, err = chain.AddRule(
-		expr.IfaceMeta().OfKindInput().Eq("lo"),
-		expr.IPv4Payload().Eq(net.IPv4(127, 0, 0, 1)),
-		expr.VerdictExpr().OfKindAccept(),
+		expr.Iface().Input().Eq("lo"),
+		expr.IP().Source().Eq(net.IPv4(127, 0, 0, 1)),
+		expr.Verdict().Accept(),
 	)
 	if err != nil {
 		t.Error(err)
@@ -61,15 +61,15 @@ func TestBasic(t *testing.T) {
 	}
 
 	_, err = chain.AddRule(
-		expr.IPv4Payload().InSet(set.ID(), set.Name()),
-		expr.VerdictExpr().OfKindAccept(),
+		expr.IP().Source().InSet(set.ID(), set.Name()),
+		expr.Verdict().Accept(),
 	)
 	if err != nil {
 		t.Error(err)
 	}
 
 	_, err = chain.AddRule(
-		expr.VerdictExpr().OfKindDrop(),
+		expr.Verdict().Drop(),
 	)
 	if err != nil {
 		t.Error(err)

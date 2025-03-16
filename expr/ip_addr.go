@@ -6,29 +6,52 @@ import (
 	nftExpr "github.com/google/nftables/expr"
 )
 
-type IPv4P struct {
-	offset Offset
-	len    uint32
+type ipSelector struct{}
+
+func IP() *ipSelector {
+	return &ipSelector{}
 }
 
-func IPv4Payload() *IPv4P {
-	return &IPv4P{
+func (i *ipSelector) Source() *ipMatcher {
+	return &ipMatcher{
 		offset: OffsetSourceIPv4,
 		len:    4,
 	}
 }
 
-func (i *IPv4P) OfKindSource() *IPv4P {
-	i.offset = OffsetSourceIPv4
-	return i
+func (i *ipSelector) Destination() *ipMatcher {
+	return &ipMatcher{
+		offset: OffsetDestIPv4,
+		len:    4,
+	}
 }
 
-func (i *IPv4P) OfKindDest() *IPv4P {
-	i.offset = OffsetDestIPv4
-	return i
+type ipV6Selector struct{}
+
+func IPv6() *ipV6Selector {
+	return &ipV6Selector{}
 }
 
-func (i *IPv4P) ToNftExprs() []nftExpr.Any {
+func (i *ipV6Selector) Source() *ipMatcher {
+	return &ipMatcher{
+		offset: OffsetSourceIPv6,
+		len:    16,
+	}
+}
+
+func (i *ipV6Selector) Destination() *ipMatcher {
+	return &ipMatcher{
+		offset: OffsetDestIPv6,
+		len:    16,
+	}
+}
+
+type ipMatcher struct {
+	offset Offset
+	len    uint32
+}
+
+func (i *ipMatcher) ToNftExprs() []nftExpr.Any {
 	return []nftExpr.Any{
 		&nftExpr.Payload{
 			DestRegister: 1,
@@ -39,26 +62,38 @@ func (i *IPv4P) ToNftExprs() []nftExpr.Any {
 	}
 }
 
-func (i *IPv4P) Eq(addr net.IP) *CmpExpression {
+func (i *ipMatcher) Eq(addr net.IP) *CmpExpression {
 	return newCompExpression(i, nftExpr.CmpOpEq, addr.To4())
 }
 
-func (i *IPv4P) Neq(addr net.IP) *CmpExpression {
+func (i *ipMatcher) Neq(addr net.IP) *CmpExpression {
 	return newCompExpression(i, nftExpr.CmpOpNeq, addr.To4())
 }
 
-func (i *IPv4P) InSet(id uint32, name string) *LookupExpression {
+func (i *ipMatcher) InSet(id uint32, name string) *LookupExpression {
 	return newLookupExpression(i, id, name, false)
 }
 
-func (i *IPv4P) NotInSet(id uint32, name string) *LookupExpression {
+func (i *ipMatcher) NotInSet(id uint32, name string) *LookupExpression {
 	return newLookupExpression(i, id, name, true)
 }
 
-func (i *IPv4P) InAnonSet(id uint32) *LookupExpression {
+func (i *ipMatcher) InNamedSet(name string) *LookupExpression {
+	return newLookupExpression(i, 0, name, false)
+}
+
+func (i *ipMatcher) NotInNamedSet(name string) *LookupExpression {
+	return newLookupExpression(i, 0, name, true)
+}
+
+func (i *ipMatcher) InAnonSet(id uint32) *LookupExpression {
 	return newLookupExpression(i, id, "", false)
 }
 
-func (i *IPv4P) NotInAnonSet(id uint32) *LookupExpression {
+func (i *ipMatcher) NotInAnonSet(id uint32) *LookupExpression {
 	return newLookupExpression(i, id, "", true)
+}
+
+func (i *ipMatcher) InNetwork(network *net.IPNet) *NetworkExpression {
+	return newNetworkExpression(i, nftExpr.CmpOpEq, network)
 }

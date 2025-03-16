@@ -28,7 +28,7 @@ import (
 )
 
 func main() {
-	d, err := nftdesk.NewNftDesk()
+	d, err := nftdesk.New()
 	if err != nil {
 		panic(err)
 	}
@@ -37,12 +37,12 @@ func main() {
 
 	chain := table.AddChain("my-chain")
 
-	_, err = chain.AddRule(
-		expr.CtStateExpr().In(expr.CtStateESTABLISHED, expr.CtStateRELATED),
-		expr.VerdictExpr().OfKindAccept(),
+	_, err := chain.AddRule(
+		expr.ConnTrack().State().In(expr.CtStateESTABLISHED, expr.CtStateRELATED),
+		expr.Verdict().Accept(),
 	)
 	if err != nil {
-		panic(err)
+		t.Error(err)
 	}
 
 	err = d.Flush()

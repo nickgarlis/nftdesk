@@ -12,7 +12,7 @@ type NftDesk struct {
 	conn *nftables.Conn
 }
 
-func NewNftDesk() (*NftDesk, error) {
+func New() (*NftDesk, error) {
 	conn, err := nftables.New()
 	if err != nil {
 		return nil, fmt.Errorf("failed to create nftables connection: %w", err)
