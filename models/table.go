@@ -113,9 +113,11 @@ func (t *Table) AddAnonIPAddrSet(elements []*IPAddrSetElement) (*Set, error) {
 
 func (t *Table) AddIPAddrSet(name string, elements []*IPAddrSetElement) (*Set, error) {
 	setObj := &nftables.Set{
-		Name:    name,
-		KeyType: nftables.TypeIPAddr,
-		Table:   t.obj,
+		Constant:  name == "",
+		Anonymous: name == "",
+		Name:      name,
+		KeyType:   nftables.TypeIPAddr,
+		Table:     t.obj,
 	}
 	var setElements []nftables.SetElement
 	for _, e := range elements {
@@ -164,9 +166,11 @@ func (t *Table) AddIPAddrSet(name string, elements []*IPAddrSetElement) (*Set, e
 
 func (t *Table) AddIP6AddrSet(name string, elements []*IPAddrSetElement) (*Set, error) {
 	setObj := &nftables.Set{
-		Name:    name,
-		KeyType: nftables.TypeIP6Addr,
-		Table:   t.obj,
+		Constant:  name == "",
+		Anonymous: name == "",
+		Name:      name,
+		KeyType:   nftables.TypeIP6Addr,
+		Table:     t.obj,
 	}
 	var setElements []nftables.SetElement
 	for _, e := range elements {
@@ -215,9 +219,11 @@ func (t *Table) AddIP6AddrSet(name string, elements []*IPAddrSetElement) (*Set, 
 
 func (t *Table) AddPortSet(name string, elements []*PortSetElement) (*Set, error) {
 	setObj := &nftables.Set{
-		Name:    name,
-		KeyType: nftables.TypeInetService,
-		Table:   t.obj,
+		Constant:  name == "",
+		Anonymous: name == "",
+		Name:      name,
+		KeyType:   nftables.TypeInetService,
+		Table:     t.obj,
 	}
 	var setElements []nftables.SetElement
 	for _, e := range elements {
